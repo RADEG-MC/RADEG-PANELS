@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RADEG PANELS</title>
+
+<style>
+body{
+  margin:0;
+  background:black;
+  color:#00ffcc;
+  font-family:monospace;
+  overflow:hidden;
+}
+
+.center{
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+
+#auth,#loginBox,#registerBox,#main{display:none;}
+
+.bar{width:300px;height:10px;border:1px solid #00ffcc;margin:auto;}
+#progress{height:100%;width:0%;background:#00ffcc;}
+
+button,input{
+  background:black;
+  border:1px solid #00ffcc;
+  color:#00ffcc;
+  margin:5px;
+  padding:8px;
+}
+
+.back{
+  position:fixed;
+  top:10px;
+  left:10px;
+  border:1px solid #00ffcc;
+  padding:5px;
+  cursor:pointer;
+}
+
+.menuBtn{
+  position:fixed;
+  top:10px;
+  left:10px;
+  z-index:1000;
+  border:1px solid #00ffcc;
+  padding:5px;
+  cursor:pointer;
+}
+
+.soundBtn{
+  position:fixed;
+  top:10px;
+  right:10px;
+  border:1px solid #00ffcc;
+  padding:5px;
+  cursor:pointer;
+}
+
+#sidebar{
+  position:fixed;
+  left:-200px;
+  top:0;
+  width:200px;
+  height:100%;
+  background:black;
+  border-right:1px solid #00ffcc;
+  transition:0.3s;
+  padding-top:60px;
+}
+
+#sidebar div{
+  padding:10px;
+  cursor:pointer;
+}
+
+#content{
+  position:absolute;
+  top:60px;
+  width:100%;
+  text-align:center;
+}
+
+.chat{
+  position:absolute;
+  bottom:0;
+  width:100%;
+}
+
+#chatBox{
+  height:180px;
+  overflow-y:auto;
+  padding:5px;
+}
+
+#chatInput{
+  width:100%;
+  background:black;
+  border:none;
+  color:#00ffcc;
+  padding:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading" class="center">
+  <div id="loadText">Starting...</div>
+  <div class="bar"><div id="progress"></div></div>
+  <div id="percent">0%</div>
+</div>
+
+<div id="auth" class="center">
+  <b>RADEG PANELS<br>BY SHREYANSH TIWARI<br>(CLASS X)</b><br><br>
+  <button onclick="showLogin()">LOGIN</button><br>
+  <button onclick="showRegister()">REGISTER</button>
+</div>
+
+<div id="loginBox">
+  <div class="back" onclick="goAuth()">BACK</div>
+  <div class="center">
+    <input id="loginUser" placeholder="ID"><br>
+    <input id="loginPass" type="password"><br>
+    <button onclick="login()">ENTER</button>
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+<div id="registerBox">
+  <div class="back" onclick="goAuth()">BACK</div>
+  <div class="center">
+    <input id="regUser" placeholder="ID"><br>
+    <input id="regEmail" placeholder="Email"><br>
+    <input id="regPass" type="password"><br>
+    <button onclick="register()">REGISTER</button>
+  </div>
+</div>
+
+<div id="main">
+
+  <div class="menuBtn" onclick="toggleMenu()">☰</div>
+  <div class="soundBtn">🔊</div>
+
+  <div id="sidebar">
+    <div onclick="logout()">Logout</div>
+    <div onclick="showStats()">CPU/RAM</div>
+  </div>
+
+  <div id="content"></div>
+
+  <div class="chat">
+    <div id="chatBox"></div>
+    <input id="chatInput" placeholder="Type Help..." onkeydown="chat(event)">
+  </div>
+
+</div>
+
+<script>
+
+/* LOADING */
+let words=["Starting...","Accessing GitHub...","Accessing RADEG Panels...","Encrypting...","Decrypting...","Loading Menus...","Welcome!"];
+let p=0,w=0;
+
+let loader=setInterval(()=>{
+  p++;
+  progress.style.width=p+"%";
+  percent.innerText=p+"%";
+
+  if(p%14===0){
+    loadText.innerText=words[w++%words.length];
+  }
+
+  if(p>=100){
+    clearInterval(loader);
+    loading.style.display="none";
+    auth.style.display="block";
+  }
+},100);
+
+/* NAV */
+function hideAll(){
+  ["auth","loginBox","registerBox","main"].forEach(id=>{
+    document.getElementById(id).style.display="none";
+  });
+}
+
+function showLogin(){hideAll();loginBox.style.display="block";}
+function showRegister(){hideAll();registerBox.style.display="block";}
+function goAuth(){hideAll();auth.style.display="block";}
+
+function login(){
+  document.getElementById("loginMsg").innerText="ACCOUNT NOT FOUND, PLEASE REGISTER.";
+}
+
+function register(){
+  hideAll();
+  main.style.display="block";
+}
+
+/* SIDEBAR */
+let open=false;
+function toggleMenu(){
+  open=!open;
+  sidebar.style.left=open?"0px":"-200px";
+}
+
+function logout(){location.reload();}
+
+/* STATS */
+let statInterval;
+function showStats(){
+  clearInterval(statInterval);
+  content.innerHTML="<h2 id='s'></h2>";
+  let s=document.getElementById("s");
+
+  statInterval=setInterval(()=>{
+    s.innerHTML="CPU: "+Math.floor(Math.random()*100)+"%<br>RAM: "+Math.floor(Math.random()*100)+"%";
+  },1000);
+}
+
+/* CHAT */
+function addChat(t){
+  chatBox.innerHTML+="<div>"+t+"</div>";
+  chatBox.scrollTop=chatBox.scrollHeight;
+}
+
+function chat(e){
+  if(e.key==="Enter"){
+    let v=e.target.value.toLowerCase();
+
+    if(v==="help"){
+      addChat("Server - scan, about, hack, stats, map");
+    }
+    else if(v==="scan"){
+      addChat("Server - Scanning system... No threats detected ✔");
+    }
+    else if(v==="map"){
+      addChat("Server - Maps feature is currently UNDER DEVELOPMENT 🚧");
+    }
+    else if(v==="stats"){
+      addChat("Server - Shows CPU and RAM usage");
+    }
+    else if(v==="hack"){
+      addChat("Server - Initializing Hack Module...<br>Server - Generating Fake IP: 192.168.43.21<br>Server - Masking Identity...<br>Server - Connecting to Target Server...<br>Server - Accessing System Files...<br>Server - Bypassing Firewall...<br>Server - Injecting Payload...<br>Server - Root Access Granted ✔<br>Server - Opening Gallery...<br>Server - Extracting Data...<br>Server - Cleaning Tracks...<br>Server - Process Completed Successfully.");
+    }
+    else if(v==="about"){
+      addChat("Server - RADEG Panels is a sleek hacker-style interface 💻.<br>It has login system, chat commands, and fake tools.<br>Support: contactradeg@gmail.com 📩");
+    }
+    else{
+      addChat("Server - OK");
+    }
+
+    e.target.value="";
+  }
+}
+
+</script>
+</body>
+    </html>
